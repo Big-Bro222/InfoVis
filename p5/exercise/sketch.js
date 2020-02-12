@@ -26,10 +26,30 @@ function setup() {
   //console.log(AccidentInfos);
   nightingaleColor = new Array("#FF5733","#58FF33","#FFCE33","#33FFE9","#3383FF","#8033FF","#F300FF","#FF001F","#5D9536","#363D95");
   //InfoChart=new InfoChart();
-  Bars = new Array()
-  for(let i=1;i<=12;i++){
-    for (let j = 0; j < 6; j++) {
-      Bars.push(new Bar(i,j));
+  Bars = new Array();
+  for(let i=0;i<6;i++){
+    Bars[i]=new Array(12);
+    for (let j=0;j<12;j++){
+      var PerturbationArray=[0,0,0,0,0,0,0];
+      var InterruptionArray=[0,0,0,0,0,0,0];
+      var OtherArray=[0,0,0,0,0,0,0];
+      AccidentArray=[PerturbationArray,InterruptionArray,OtherArray]
+      AccidentInfos.forEach(element => {
+        var YearMonthMatch=element.Date.getFullYear()==i+2013&&(element.Date.getMonth()==j||element.Date.getMonth()+12==j);
+        if(YearMonthMatch){
+          if(element.Type=='perturbation'){
+            PerturbationArray[element.DayofWeek]++;
+          }
+          else if(element.Type=='interruption')
+          {
+            InterruptionArray[element.DayofWeek]++;
+          }else{
+            OtherArray[element.DayofWeek]++;
+          }
+        }
+      });
+
+      Bars[i][j]=new Bar(j,i,AccidentArray);
     }
   }
 }
@@ -43,14 +63,15 @@ function StringtoDateArray(Acc){
   return timeArray; 
 }
 
-function mousePressed(){
+function mouseOver(){
+  Bars=[].concat.apply([],Bars)
   Bars.forEach(element => {
     element.click();
   });
 }
 function draw() {
   //TODO del;
-  noLoop();
+  //noLoop();
   let backgroundColor = color('magenta');
   background(backgroundColor);
   
@@ -62,7 +83,7 @@ function draw() {
       textSize(32);
       text(i, 90+i*210, 1850);
       }
-  
+  Bars=[].concat.apply([],Bars)
   Bars.forEach(element => {
     element.display();
   });
@@ -73,7 +94,7 @@ function draw() {
 
 
 class Bar{
-  constructor(a,b){
+  constructor(a,b,AccidentArray){
     this.column=a;
     this.row=b;
     this.width=200;
@@ -82,33 +103,14 @@ class Bar{
     this.padding=20;
     this.month=a;
     this.year=b+2013;
-    this.PerturbationArray=[0,0,0,0,0,0,0];
-    this.InterruptionArray=[0,0,0,0,0,0,0];
-    this.OtherArray=[0,0,0,0,0,0,0];
+    this.PerturbationArray=AccidentArray[0];
+    this.InterruptionArray=AccidentArray[1];
+    this.OtherArray=AccidentArray[2];
     this.Line=new Line();
     this.originPointX=-this.gap+this.column*(this.width+this.gap);
     this.originPointY=1600-this.row*(this.length+this.gap);
   }
   display(){
-
-    AccidentInfos.forEach(element => {
-      var YearMonthMatch=element.Date.getFullYear()==this.year&&(element.Date.getMonth()==this.month||element.Date.getMonth()+12==this.month);
-      if(YearMonthMatch){
-        if(element.Type=='perturbation'){
-          this.PerturbationArray[element.DayofWeek]++;
-        }
-        else if(element.Type=='interruption')
-        {
-          this.InterruptionArray[element.DayofWeek]++;
-        }else{
-          this.OtherArray[element.DayofWeek]++;
-        }
-      }
-    });
-    
-    console.log(this.OtherArray);
-
-    
     //draw square background
     let c = color(255, 204, 0);
 

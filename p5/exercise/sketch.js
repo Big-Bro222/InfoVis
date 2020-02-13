@@ -2,7 +2,7 @@ var w =3000;
 var h= 3000;
 
 function preload(){
-  table=loadTable("RER-Boo.csv","csv","header");
+  table=loadTable("rerb.csv","csv","header");
 }
 function setup() {
   c=createCanvas(w,h);
@@ -28,7 +28,7 @@ function setup() {
   //InfoChart=new InfoChart();
   
   Bars = new Array();
-  for(let i=0;i<6;i++){
+  for(let i=0;i<7;i++){
     Bars[i]=new Array(12);
     for (let j=0;j<12;j++){
       var PerturbationArray=[0,0,0,0,0,0,0];
@@ -114,8 +114,11 @@ function CalculateCor(x,y){
     console.log("hover on gap x");
     cor[0]=-1;
   } 
+
   
-    if(y>Y+padding&&y<Y+SquareSize-padding){
+  if(y>Y+padding-SquareSize-gap&&y<Y+SquareSize-padding-SquareSize-gap){
+      cor[1]=6;
+  }else if(y>Y+padding&&y<Y+SquareSize-padding){
       cor[1]=5;
   }else if(y>Y+SquareSize+gap+padding&&y<Y+2*SquareSize-padding+gap){
       cor[1]=4;
@@ -142,9 +145,9 @@ function draw() {
   let backgroundColor = color('magenta');
   background(backgroundColor);
   
-    for (let j = 0; j < 6; j++) {
+    for (let j = 0; j < 7; j++) {
       textSize(32);
-      text(2018-j, 100, 650+j*210);
+      text(2019-j, 100, 450+j*210);
       }
     for(let i=1;i<=12;i++){
       textSize(32);

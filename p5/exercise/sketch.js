@@ -321,7 +321,27 @@ class ReasonChart{
     this.SocialReason=[0,0,0,0,0,0,0];
     this.OpertationReason=[0,0,0,0,0,0,0];
     this.WeatherReason=[0,0,0,0,0,0,0];
-    this.PieChart=new PieChart();
+    this.color= 
+    [color(0,255,127),
+      color(0,191,255),
+      color(255,215,0),
+      color(255,130,71),
+      color(138,43,226),
+      color(255,110,180),
+      color(139,105,105),
+      color(0,245,255)]
+    this.ReasonArray=[
+      "Track construction",
+      "Passenger reason",
+      "Security reason",
+      "Technique reason",
+      "Social movement",
+      "Operation problem",
+      "Weather reason",
+      "Unknown reason"
+    ]
+    this.PieChart=new PieChart(this.color,this.ReasonArray);
+
   }
   setup(){
     this.UnknownReason=this.ReasonToYear(this.UnknownReason,"there is no reason");
@@ -339,14 +359,16 @@ class ReasonChart{
     rect(this.originPointX,this.originPointY,this.width,this.height);
     
     
-    this.DrawReanLine(this.UnknownReason,[0,245,255]);
-    this.DrawReanLine(this.ConstructionReason,[0,255,127]);
-    this.DrawReanLine(this.PassengerReason,[0,191,255]);
-    this.DrawReanLine(this.SecurityReason,[255,215,0]);
-    this.DrawReanLine(this.TechniqueReason,[255,130,71]);
-    this.DrawReanLine(this.SocialReason,[138,43,226]);
-    this.DrawReanLine(this.OpertationReason,[255,110,180]);
-    this.DrawReanLine(this.WeatherReason,[139,105,105]);
+    this.DrawReanLine(this.ConstructionReason,color(0,255,127));
+    this.DrawReanLine(this.PassengerReason,color(0,191,255));
+    this.DrawReanLine(this.SecurityReason,color(255,215,0));
+    this.DrawReanLine(this.TechniqueReason,color(255,130,71));
+    this.DrawReanLine(this.SocialReason,color(138,43,226));
+    this.DrawReanLine(this.OpertationReason,color(255,110,180));
+    this.DrawReanLine(this.WeatherReason,color(139,105,105));
+    this.DrawReanLine(this.UnknownReason,color(0,245,255));
+
+
 
   }
   
@@ -381,9 +403,7 @@ class ReasonChart{
   }
 
   DrawReanLine(ReasonArray,color) {
-
-    
-    stroke(color[0],color[1],color[2])
+    stroke(color)
     strokeWeight(3);
     noFill();
     var multiply=4;
@@ -413,16 +433,19 @@ class ReasonChart{
 }
 
 class PieChart{
-  constructor(){
+  constructor(color,ReasonArray){
     this.originPointX=0;
     this.originPointY=0;
     this.width=500;
     this.height=400;
+    this.color=color;
+    this.ReasonArray=ReasonArray;
   }
   display(a,b,PieValueArr){
     this.originPointX=a;
     this.originPointY=b;
     console.log(PieValueArr);
+    stroke(color("black"));
     fill(color("white"));
     rect(this.originPointX,this.originPointY,this.width,this.height);
 
@@ -430,26 +453,32 @@ class PieChart{
     PieValueArr.forEach(element=>{
       sum=element+sum;
     })
-    for(var i=0;i<PieValueArr.length;i++){
-      PieValueArr[i]=PieValueArr[i]/sum*360;
-    }
-    this.pieChart(300, PieValueArr);
 
+    textSize(15);
+    textAlign(LEFT, BASELINE);
+    for(var i=0;i<PieValueArr.length;i++){
+      PieValueArr[i]=PieValueArr[i]/sum;
+      fill(this.color[i]);
+      rect(this.originPointX+260,50+this.originPointY+30*(i+1),20,20);
+      fill(color("black"));
+      text(this.ReasonArray[i]+" "+(PieValueArr[i]*100).toFixed(2)+"%", this.originPointX+300, 50+this.originPointY+45+i*30);
+    }
+    this.pieChart(200, PieValueArr);
   }
   pieChart(diameter, data) {
     let lastAngle = 0;
     for (let i = 0; i < data.length; i++) {
-      let gray = map(i, 0, data.length, 0, 255);
-      fill(gray);
+      // let gray = map(i, 0, data.length, 0, 255);
+      fill(this.color[i]);
       arc(
-        this.originPointX+this.width/2,
-        this.originPointY+this.height/2,
+        this.originPointX+130,
+        this.originPointY+200,
         diameter,
         diameter,
         lastAngle,
-        lastAngle + radians(data[i])
+        lastAngle + radians(data[i]*360)
       );
-      lastAngle += radians(data[i]);
+      lastAngle += radians(data[i]*360);
     }
   }
 }

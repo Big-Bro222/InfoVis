@@ -1,5 +1,5 @@
-var w =3000;
-var h= 3000;
+var w =2800;
+var h= 3500;
 
 function preload(){
   table=loadTable("rerb.csv","csv","header");
@@ -54,8 +54,9 @@ function setup() {
     }
   }
   PriviousBar=Bars[0][0];
-
   
+  ReasonChart=new ReasonChart();
+  ReasonChart.setup();
 }
 //convert time+date into Date type
 function StringtoDateArray(Acc){
@@ -69,16 +70,18 @@ function StringtoDateArray(Acc){
 function MouseOver(){
   cor=[0,0];
   cor=CalculateCor(mouseX,mouseY);
-  if(cor[0]!=-1||cor[1]!=-1){
+  if(cor[0]!=-1&&cor[1]!=-1){
     if(PriviousBar!=Bars[cor[1],cor[0]]){
       PriviousBar.mouseOut();
     }
-    Bars[cor[1]][cor[0]].click();
+
+    Bars[cor[1]][cor[0]].mouseOver();
     PriviousBar=Bars[cor[1]][cor[0]];
   }
+
+  ReasonChart.mouseOver();
   
 }
-
 function CalculateCor(x,y){
   var SquareSize=200;
   var gap=10;
@@ -111,7 +114,7 @@ function CalculateCor(x,y){
   }else if(x>X+11*SquareSize+11*gap+padding&&x<X+12*SquareSize+11*gap-padding){
     cor[0]=11;
   }else {
-    console.log("hover on gap x");
+    // console.log("hover on gap x");
     cor[0]=-1;
   } 
 
@@ -131,7 +134,7 @@ function CalculateCor(x,y){
   }else if(y>Y+5*SquareSize+5*gap+padding&&y<Y+6*SquareSize+5*gap-padding){
       cor[1]=0;
   }else{
-    console.log("hover on gap y");
+    // console.log("hover on gap y");
     cor[1]=-1;
   }
 
@@ -157,6 +160,8 @@ function draw() {
   Barsss.forEach(element => {
     element.display();
   });
+  
+  ReasonChart.display();
   //InfoChart.display();
 }
 
@@ -166,8 +171,9 @@ class Bar{
   constructor(a,b,AccidentArray){
     this.column=a;
     this.row=b;
-    this.width=200;
-    this.length=200;
+    this.size=200;
+    // this.width=200;
+    // this.length=200;
     this.gap=10;
     this.padding=20;
     this.month=a+1;
@@ -175,8 +181,8 @@ class Bar{
     this.PerturbationArray=AccidentArray[0];
     this.InterruptionArray=AccidentArray[1];
     this.OtherArray=AccidentArray[2];
-    this.originPointX=200-this.gap+this.column*(this.width+this.gap);
-    this.originPointY=1600-this.row*(this.length+this.gap);
+    this.originPointX=200-this.gap+this.column*(this.size+this.gap);
+    this.originPointY=1600-this.row*(this.size+this.gap);
   }
   display(){
     //draw square background
@@ -185,9 +191,9 @@ class Bar{
     fill(c); 
     strokeWeight(1);
     stroke(51);
-    rect(this.originPointX,this.originPointY,this.width,this.length); 
+    rect(this.originPointX,this.originPointY,this.size,this.size); 
     fill(color('white'));
-    rect(this.originPointX+this.padding,this.originPointY+this.padding,this.width-2*this.padding,this.length-2*this.padding);
+    rect(this.originPointX+this.padding,this.originPointY+this.padding,this.size-2*this.padding,this.size-2*this.padding);
     this.DrawLineChart(this.originPointX, this.originPointY,this.PerturbationArray,[255,255,0]);
     this.DrawLineChart(this.originPointX, this.originPointY,this.InterruptionArray,[255,0,0]);
     this.DrawLineChart(this.originPointX, this.originPointY,this.OtherArray,[0,0,255]);
@@ -195,15 +201,15 @@ class Bar{
     //draw circular chart
 
   }
-  click(){
-      console.log(this.year+" and "+this.month);
+  mouseOver(){
+      // console.log(this.year+" and "+this.month);
           this.display();
           strokeWeight(1);
           for(let i=0;i<7;i++){
-            if(mouseX>this.originPointX + 25 * i + (this.width - 6 * 25) / 2-12.5&&mouseX<this.originPointX + 25 * i + (this.width - 6 * 25) / 2+12.5){
-              line(this.originPointX + 25 * i + (this.width - 6 * 25) / 2,this.originPointY+this.padding,this.originPointX + 25 * i + (this.width - 6 * 25) / 2,this.originPointY+this.width-this.padding);
-              var labeldown=mouseY>this.originPointY+this.padding&&mouseY<this.originPointY+this.width/2;
-              var labelright=mouseX>this.originPointX+this.padding&&mouseX<this.originPointX+this.width/2;
+            if(mouseX>this.originPointX + 25 * i + (this.size - 6 * 25) / 2-12.5&&mouseX<this.originPointX + 25 * i + (this.size - 6 * 25) / 2+12.5){
+              line(this.originPointX + 25 * i + (this.size - 6 * 25) / 2,this.originPointY+this.padding,this.originPointX + 25 * i + (this.size - 6 * 25) / 2,this.originPointY+this.size-this.padding);
+              var labeldown=mouseY>this.originPointY+this.padding&&mouseY<this.originPointY+this.size/2;
+              var labelright=mouseX>this.originPointX+this.padding&&mouseX<this.originPointX+this.size/2;
               if(labeldown&&labelright){
                 rect(mouseX,mouseY,90,50);
                 fill(color("black"));
@@ -251,7 +257,6 @@ class Bar{
       
     
   }
-
   mouseOut(){
     this.display();
   }
@@ -261,22 +266,19 @@ class Bar{
     strokeWeight(1);
     beginShape();
     for (let i = 0; i < AccidentCountDayofWeek.length; i++) {
-      vertex(originPointX + 25 * i + (this.width - 6 * 25) / 2, originPointY + this.width - this.padding - AccidentCountDayofWeek[i] * multiply);
+      vertex(originPointX + 25 * i + (this.size - 6 * 25) / 2, originPointY + this.size - this.padding - AccidentCountDayofWeek[i] * multiply);
     }
-    vertex(originPointX+this.width-this.padding,originPointY+this.length-this.padding);
-    vertex(originPointX+this.padding,originPointY+this.length-this.padding);
+    vertex(originPointX+this.size-this.padding,originPointY+this.size-this.padding);
+    vertex(originPointX+this.padding,originPointY+this.size-this.padding);
     // 结束绘制图形
     endShape();
 
     strokeWeight(9);
     for (let i = 0; i < AccidentCountDayofWeek.length; i++) {
-      point(originPointX + 25 * i + (this.width - 6 * 25) / 2, originPointY + this.width - this.padding - AccidentCountDayofWeek[i] * multiply);
+      point(originPointX + 25 * i + (this.size - 6 * 25) / 2, originPointY + this.size - this.padding - AccidentCountDayofWeek[i] * multiply);
     }
   }
   }
-
-
-
 
 class InfoChart{
   constructor(){
@@ -303,7 +305,154 @@ class InfoChart{
   }
 }
 
+class ReasonChart{
+  constructor(){
+    this.originPointX=200;
+    this.originPointY=2100;
+    this.width=1000;
+    this.height=1000;
+    this.padding=35;
+    this.AccidentInfos=AccidentInfos;
+    this.UnknownReason=[0,0,0,0,0,0,0];
+    this.ConstructionReason=[0,0,0,0,0,0,0];
+    this.PassengerReason=[0,0,0,0,0,0,0];
+    this.SecurityReason=[0,0,0,0,0,0,0];
+    this.TechniqueReason=[0,0,0,0,0,0,0];
+    this.SocialReason=[0,0,0,0,0,0,0];
+    this.OpertationReason=[0,0,0,0,0,0,0];
+    this.WeatherReason=[0,0,0,0,0,0,0];
+    this.PieChart=new PieChart();
+  }
+  setup(){
+    this.UnknownReason=this.ReasonToYear(this.UnknownReason,"there is no reason");
+    this.ConstructionReason=this.ReasonToYear(this.ConstructionReason,"Track construction");
+    this.PassengerReason=this.ReasonToYear(this.PassengerReason,"Passenger reason");
+    this.SecurityReason=this.ReasonToYear(this.SecurityReason,"Security reason");
+    this.TechniqueReason=this.ReasonToYear(this.TechniqueReason,"Technique reason");
+    this.SocialReason=this.ReasonToYear(this.SocialReason,"Social movement");
+    this.OpertationReason=this.ReasonToYear(this.OpertationReason,"Operation problem");
+    this.WeatherReason=this.ReasonToYear(this.WeatherReason,"Weather reason");
 
+  }
+  display(){
+    fill(color('white'));
+    rect(this.originPointX,this.originPointY,this.width,this.height);
+    
+    
+    this.DrawReanLine(this.UnknownReason,[0,245,255]);
+    this.DrawReanLine(this.ConstructionReason,[0,255,127]);
+    this.DrawReanLine(this.PassengerReason,[0,191,255]);
+    this.DrawReanLine(this.SecurityReason,[255,215,0]);
+    this.DrawReanLine(this.TechniqueReason,[255,130,71]);
+    this.DrawReanLine(this.SocialReason,[138,43,226]);
+    this.DrawReanLine(this.OpertationReason,[255,110,180]);
+    this.DrawReanLine(this.WeatherReason,[139,105,105]);
+
+  }
+  
+  mouseOver(){
+    var mouseInReasonChart=mouseX>this.originPointX&&mouseX<this.originPointX+this.width&&mouseY>this.originPointY&&mouseY<this.originPointY+this.height;
+    if(mouseInReasonChart){
+      this.display();
+      strokeWeight(2);
+      var i=Math.floor((mouseX-this.originPointX)/(this.width/7));
+      line(this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY,this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY+this.height);
+
+      var PieValueArr=[this.ConstructionReason[i],
+                   this.PassengerReason[i],
+                   this.SecurityReason[i],
+                   this.TechniqueReason[i],
+                   this.SocialReason[i],
+                   this.OpertationReason[i],
+                   this.WeatherReason[i],
+                   this.UnknownReason[i]]
+      var Paneldown=mouseY<this.originPointY+this.height/2;
+      var Panelright=mouseX<this.originPointX+this.width/2;
+      if(Paneldown&&Panelright){
+        this.PieChart.display(mouseX,mouseY,PieValueArr);
+      }else if(Paneldown&&!Panelright){
+        this.PieChart.display(mouseX-this.PieChart.width,mouseY,PieValueArr);
+      }else if(!Paneldown&&Panelright){
+        this.PieChart.display(mouseX,mouseY-this.PieChart.height,PieValueArr);
+      }else{
+        this.PieChart.display(mouseX-this.PieChart.width,mouseY-this.PieChart.height,PieValueArr);
+      }
+    }
+  }
+
+  DrawReanLine(ReasonArray,color) {
+
+    
+    stroke(color[0],color[1],color[2])
+    strokeWeight(3);
+    noFill();
+    var multiply=4;
+    beginShape();
+    for (let i = 0; i < 7; i++) {
+      vertex(this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6, this.originPointY +this.height-ReasonArray[i]*multiply);
+    }
+    endShape();
+
+    strokeWeight(10);
+    for (let i = 0; i < 7; i++) {
+      point(this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6, this.originPointY +this.height-ReasonArray[i]*multiply);
+    }
+  }
+
+  ReasonToYear(ReasonArray,ReasonName){
+    this.AccidentInfos.forEach(element => {   
+      if(element.Reason==ReasonName){
+        var arraynum=element.Date.getFullYear()-2013;
+        ReasonArray[arraynum]++;
+      }
+    })
+    
+    return ReasonArray;
+  } 
+
+}
+
+class PieChart{
+  constructor(){
+    this.originPointX=0;
+    this.originPointY=0;
+    this.width=500;
+    this.height=400;
+  }
+  display(a,b,PieValueArr){
+    this.originPointX=a;
+    this.originPointY=b;
+    console.log(PieValueArr);
+    fill(color("white"));
+    rect(this.originPointX,this.originPointY,this.width,this.height);
+
+    var sum=0;
+    PieValueArr.forEach(element=>{
+      sum=element+sum;
+    })
+    for(var i=0;i<PieValueArr.length;i++){
+      PieValueArr[i]=PieValueArr[i]/sum*360;
+    }
+    this.pieChart(300, PieValueArr);
+
+  }
+  pieChart(diameter, data) {
+    let lastAngle = 0;
+    for (let i = 0; i < data.length; i++) {
+      let gray = map(i, 0, data.length, 0, 255);
+      fill(gray);
+      arc(
+        this.originPointX+this.width/2,
+        this.originPointY+this.height/2,
+        diameter,
+        diameter,
+        lastAngle,
+        lastAngle + radians(data[i])
+      );
+      lastAngle += radians(data[i]);
+    }
+  }
+}
 
 
 

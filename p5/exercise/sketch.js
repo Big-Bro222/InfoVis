@@ -1,5 +1,5 @@
 var w =2800;
-var h= 3500;
+var h= 4000;
 
 function preload(){
   table=loadTable("rerb.csv","csv","header");
@@ -24,9 +24,7 @@ function setup() {
      AccidentInfos.push(AccidentInfo);
   }
 
-  nightingaleColor = new Array("#FF5733","#58FF33","#FFCE33","#33FFE9","#3383FF","#8033FF","#F300FF","#FF001F","#5D9536","#363D95");
-  //InfoChart=new InfoChart();
-  
+  Text=new Text();
   Bars = new Array();
   for(let i=0;i<7;i++){
     Bars[i]=new Array(12);
@@ -87,7 +85,7 @@ function CalculateCor(x,y){
   var gap=10;
   var padding=20;
   var X=195;
-  var Y=555;
+  var Y=1155;
   var cor=[0,0];
   if(x>X+padding&&x<X+SquareSize-padding){
      cor[0]=0;
@@ -145,16 +143,16 @@ function CalculateCor(x,y){
 function draw() {
   //TODO del;
   noLoop();
-  let backgroundColor = color('magenta');
+  let backgroundColor = color(232,232,232);
   background(backgroundColor);
   
     for (let j = 0; j < 7; j++) {
       textSize(32);
-      text(2019-j, 100, 450+j*210);
+      text(2019-j, 100, 1050+j*210);
       }
     for(let i=1;i<=12;i++){
       textSize(32);
-      text(i, 90+i*210, 1850);
+      text(i, 90+i*210, 2450);
       }
   Barsss=[].concat.apply([],Bars);
   Barsss.forEach(element => {
@@ -162,7 +160,8 @@ function draw() {
   });
   
   ReasonChart.display();
-  //InfoChart.display();
+  Text.display();
+
 }
 
 
@@ -182,17 +181,25 @@ class Bar{
     this.InterruptionArray=AccidentArray[1];
     this.OtherArray=AccidentArray[2];
     this.originPointX=200-this.gap+this.column*(this.size+this.gap);
-    this.originPointY=1600-this.row*(this.size+this.gap);
+    this.originPointY=2200-this.row*(this.size+this.gap);
   }
   display(){
     //draw square background
-    let c = color(255, 204, 0);
-
+    var c = color(255, 204, 0);
+    var DayofWeek=["Sun","Mon","Tu","Wed","Thur","Fri","Sat"]
     fill(c); 
     strokeWeight(1);
     stroke(51);
     rect(this.originPointX,this.originPointY,this.size,this.size); 
-    fill(color('white'));
+
+    for(var i=0;i<DayofWeek.length;i++){
+      fill(color("black"));
+      textSize(10);
+      textAlign(CENTER, CENTER);
+      text(DayofWeek[i],this.originPointX + 25 * i + (this.size - 6 * 25) / 2,this.originPointY+this.size-10);
+    }
+
+    fill(color('white'));  
     rect(this.originPointX+this.padding,this.originPointY+this.padding,this.size-2*this.padding,this.size-2*this.padding);
     this.DrawLineChart(this.originPointX, this.originPointY,this.PerturbationArray,[255,255,0]);
     this.DrawLineChart(this.originPointX, this.originPointY,this.InterruptionArray,[255,0,0]);
@@ -210,41 +217,74 @@ class Bar{
               line(this.originPointX + 25 * i + (this.size - 6 * 25) / 2,this.originPointY+this.padding,this.originPointX + 25 * i + (this.size - 6 * 25) / 2,this.originPointY+this.size-this.padding);
               var labeldown=mouseY>this.originPointY+this.padding&&mouseY<this.originPointY+this.size/2;
               var labelright=mouseX>this.originPointX+this.padding&&mouseX<this.originPointX+this.size/2;
+              var labelwidth=100;
+              var labelheight=50;
               if(labeldown&&labelright){
-                rect(mouseX,mouseY,90,50);
+                rect(mouseX,mouseY,labelwidth,labelheight);
                 fill(color("black"));
                 textSize(10);
                 textAlign(LEFT, CENTER);
                 text("Perturbation: "+this.PerturbationArray[i],mouseX+10, mouseY+10);
                 text("Interruption: "+this.InterruptionArray[i],mouseX+10, mouseY+20);
                 text("Other: "+this.OtherArray[i],mouseX+10, mouseY+30);
+                strokeWeight(5)
+                stroke(255,250,205);
+                point(mouseX+90,mouseY+10);
+                stroke(255,140,0);
+                point(mouseX+90,mouseY+20);
+                stroke(99,184,255);
+                point(mouseX+90,mouseY+30);
     
               }else if(!labeldown&&labelright){
-                rect(mouseX,mouseY-50,90,50);
+                rect(mouseX,mouseY-labelheight,labelwidth,labelheight);
                 fill(color("black"));
                 textSize(10);
                 textAlign(LEFT, CENTER);
                 text("Perturbation: "+this.PerturbationArray[i],mouseX+10, mouseY-40);
                 text("Interruption: "+this.InterruptionArray[i],mouseX+10, mouseY-30);
                 text("Other: "+this.OtherArray[i],mouseX+10, mouseY-20);
+                strokeWeight(5)
+                stroke(255,250,205);
+                point(mouseX+90,mouseY-40);
+                stroke(255,140,0);
+                point(mouseX+90,mouseY-30);
+                stroke(99,184,255);
+                point(mouseX+90,mouseY-20);
+    
     
               }else if(!labeldown&&!labelright){
-                rect(mouseX-90,mouseY-50,90,50);
+                rect(mouseX-labelwidth,mouseY-labelheight,labelwidth,labelheight);
                 fill(color("black"));
                 textSize(10);
                 textAlign(LEFT, CENTER);
-                text("Perturbation: "+this.PerturbationArray[i],mouseX-80, mouseY-40);
-                text("Interruption: "+this.InterruptionArray[i],mouseX-80, mouseY-30);
-                text("Other: "+this.OtherArray[i],mouseX-80, mouseY-20);
+                text("Perturbation: "+this.PerturbationArray[i],mouseX-90, mouseY-40);
+                text("Interruption: "+this.InterruptionArray[i],mouseX-90, mouseY-30);
+                text("Other: "+this.OtherArray[i],mouseX-90, mouseY-20);
+                strokeWeight(5)
+                stroke(255,250,205);
+                point(mouseX-10,mouseY-40);
+                stroke(255,140,0);
+                point(mouseX-10,mouseY-30);
+                stroke(99,184,255);
+                point(mouseX-10,mouseY-20);
+    
     
               }else{
-                rect(mouseX-90,mouseY,90,50);
+                rect(mouseX-labelwidth,mouseY,labelwidth,labelheight);
                 fill(color("black"));
                 textSize(10);
                 textAlign(LEFT, CENTER);
-                text("Perturbation: "+this.PerturbationArray[i],mouseX-80, mouseY+10);
-                text("Interruption: "+this.InterruptionArray[i],mouseX-80, mouseY+20);
-                text("Other: "+this.OtherArray[i],mouseX-80, mouseY+30);
+                text("Perturbation: "+this.PerturbationArray[i],mouseX-90, mouseY+10);
+                text("Interruption: "+this.InterruptionArray[i],mouseX-90, mouseY+20);
+                text("Other: "+this.OtherArray[i],mouseX-90, mouseY+30);
+                strokeWeight(5)
+                stroke(255,250,205);
+                point(mouseX-10,mouseY+10);
+                stroke(255,140,0);
+                point(mouseX-10,mouseY+20);
+                stroke(99,184,255);
+                point(mouseX-10,mouseY+30);
+    
     
               }
             }
@@ -280,39 +320,16 @@ class Bar{
   }
   }
 
-class InfoChart{
-  constructor(){
-     this.X=100;
-     this.Y=100;
-  }
-  display(){
-    for(var i=0;i<nightingaleColor.length;i++){
-      fill(color(nightingaleColor[i]));
-      rect(this.X,this.Y+i*40,20,20);
-      fill(color("black"));
-      textSize(12);
-      textAlign(LEFT, CENTER);
-      if(i==0){
-        text("Before 7 ", this.X+40, this.Y+10+i*40);
-      }else if(i==9){
-        text("After 23 ",this.X+40, this.Y+10+i*40);
-      }else{
-        text((2*i+5)+" to " +(2*i+7), this.X+40, this.Y+10+i*40);
-      }
-
-    }
-     
-  }
-}
-
 class ReasonChart{
   constructor(){
     this.originPointX=200;
-    this.originPointY=2100;
+    this.originPointY=2700;
     this.width=1000;
     this.height=1000;
     this.padding=35;
     this.AccidentInfos=AccidentInfos;
+    this.Reasonpops=[];
+
     this.UnknownReason=[0,0,0,0,0,0,0];
     this.ConstructionReason=[0,0,0,0,0,0,0];
     this.PassengerReason=[0,0,0,0,0,0,0];
@@ -330,7 +347,7 @@ class ReasonChart{
       color(255,110,180),
       color(139,105,105),
       color(0,245,255)]
-    this.ReasonArray=[
+    this.ReasonName=[
       "Track construction",
       "Passenger reason",
       "Security reason",
@@ -340,7 +357,7 @@ class ReasonChart{
       "Weather reason",
       "Unknown reason"
     ]
-    this.PieChart=new PieChart(this.color,this.ReasonArray);
+    this.PieChart=new PieChart(this.color,this.ReasonName);
 
   }
   setup(){
@@ -352,30 +369,76 @@ class ReasonChart{
     this.SocialReason=this.ReasonToYear(this.SocialReason,"Social movement");
     this.OpertationReason=this.ReasonToYear(this.OpertationReason,"Operation problem");
     this.WeatherReason=this.ReasonToYear(this.WeatherReason,"Weather reason");
-
   }
   display(){
-    fill(color('white'));
-    rect(this.originPointX,this.originPointY,this.width,this.height);
+    this.DrawChart();
+
+
+
+
+    for(var i=0;i<this.color.length;i++){
+      textSize(20);
+      textAlign(LEFT, BASELINE);
+      textStyle(BOLD);
+      noStroke();
+      fill(this.color[i]);
+      rect(this.originPointX+this.width+50,50+this.originPointY+30*i,20,20);
+      fill(color("black"));
+      noStroke();
+      text(this.ReasonName[i], this.originPointX+this.width+100, this.originPointY+30*i+65);
+    }
+
+    textSize(35);
+      textAlign(CENTER, BASELINE);
+      fill(color("black"));
+      noStroke();
+      text("Incident reason over years", this.originPointX+this.width/2, this.originPointY+this.height+100);
+
+    for(var i=0;i<7;i++){
+      textSize(16);
+      textAlign(CENTER, BASELINE);
+      fill(color("black"));
+      noStroke();
+      text(2013+i, this.originPointX+this.padding+i*(this.width - 2 * this.padding) / 6, this.originPointY+this.height+30);
+    }
+
+
+    for(var i=0;i<6;i++){
+      textSize(16);
+      textAlign(CENTER, BASELINE);
+      fill(color("black"));
+      noStroke();
+      text(i*50, this.originPointX-30, this.originPointY+this.height-i*200);
+    }    
     
-    
-    this.DrawReanLine(this.ConstructionReason,color(0,255,127));
-    this.DrawReanLine(this.PassengerReason,color(0,191,255));
-    this.DrawReanLine(this.SecurityReason,color(255,215,0));
-    this.DrawReanLine(this.TechniqueReason,color(255,130,71));
-    this.DrawReanLine(this.SocialReason,color(138,43,226));
-    this.DrawReanLine(this.OpertationReason,color(255,110,180));
-    this.DrawReanLine(this.WeatherReason,color(139,105,105));
-    this.DrawReanLine(this.UnknownReason,color(0,245,255));
-
-
-
+    //rect(this.originPointX+this.width+500,this.originPointY,800,800);
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    fill(color("black"));
+    text(`This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
+    Social media is a rich source of information to observe and understand the views of the general population towards migrants and refugees: how much the matter concerns them, how they feel about it and what events are perceived as particularly important.`
+    ,this.originPointX+this.width+500,this.originPointY,800,800);
   }
   
+  DrawChart() {
+    fill(color('white'));
+    noStroke();
+    rect(this.originPointX, this.originPointY, this.width, this.height);
+    this.DrawReanLine(this.ConstructionReason, color(0, 255, 127));
+    this.DrawReanLine(this.PassengerReason, color(0, 191, 255));
+    this.DrawReanLine(this.SecurityReason, color(255, 215, 0));
+    this.DrawReanLine(this.TechniqueReason, color(255, 130, 71));
+    this.DrawReanLine(this.SocialReason, color(138, 43, 226));
+    this.DrawReanLine(this.OpertationReason, color(255, 110, 180));
+    this.DrawReanLine(this.WeatherReason, color(139, 105, 105));
+    this.DrawReanLine(this.UnknownReason, color(0, 245, 255));
+  }
+
   mouseOver(){
     var mouseInReasonChart=mouseX>this.originPointX&&mouseX<this.originPointX+this.width&&mouseY>this.originPointY&&mouseY<this.originPointY+this.height;
     if(mouseInReasonChart){
-      this.display();
+      strokeWeight(1);
+      this.DrawChart();
       strokeWeight(2);
       var i=Math.floor((mouseX-this.originPointX)/(this.width/7));
       line(this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY,this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY+this.height);
@@ -399,6 +462,8 @@ class ReasonChart{
       }else{
         this.PieChart.display(mouseX-this.PieChart.width,mouseY-this.PieChart.height,PieValueArr);
       }
+    }else{
+      this.DrawChart();
     }
   }
 
@@ -413,7 +478,7 @@ class ReasonChart{
     }
     endShape();
 
-    strokeWeight(10);
+    strokeWeight(15);
     for (let i = 0; i < 7; i++) {
       point(this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6, this.originPointY +this.height-ReasonArray[i]*multiply);
     }
@@ -433,53 +498,122 @@ class ReasonChart{
 }
 
 class PieChart{
-  constructor(color,ReasonArray){
+  constructor(color,ReasonName){
     this.originPointX=0;
     this.originPointY=0;
     this.width=500;
     this.height=400;
     this.color=color;
-    this.ReasonArray=ReasonArray;
+    this.ReasonName=ReasonName;
+    this.ReasonObjs=[];
   }
   display(a,b,PieValueArr){
     this.originPointX=a;
     this.originPointY=b;
     console.log(PieValueArr);
-    stroke(color("black"));
-    fill(color("white"));
-    rect(this.originPointX,this.originPointY,this.width,this.height);
-
     var sum=0;
     PieValueArr.forEach(element=>{
       sum=element+sum;
     })
+    this.ReasonObjs=[];
 
-    textSize(15);
-    textAlign(LEFT, BASELINE);
-    for(var i=0;i<PieValueArr.length;i++){
-      PieValueArr[i]=PieValueArr[i]/sum;
-      fill(this.color[i]);
+    for(let i=0;i<this.color.length;i++){
+      var ReasonObj= new Object();
+      ReasonObj.Name=this.ReasonName[i];
+      ReasonObj.color=this.color[i];
+      ReasonObj.Value=(PieValueArr[i]/sum*100).toFixed(2);
+      this.ReasonObjs.push(ReasonObj);
+     }
+    
+    this.ReasonObjs.sort(this.compare('Value'));
+    
+    console.log(this.ReasonObjs);
+    stroke(color("black"));
+    fill(color("white"));
+    rect(this.originPointX,this.originPointY,this.width,this.height);
+
+    for(var i=0;i<this.ReasonObjs.length;i++){
+      textSize(16);
+      textAlign(LEFT, BASELINE);
+      fill(this.ReasonObjs[i].color);
       rect(this.originPointX+260,50+this.originPointY+30*(i+1),20,20);
       fill(color("black"));
-      text(this.ReasonArray[i]+" "+(PieValueArr[i]*100).toFixed(2)+"%", this.originPointX+300, 50+this.originPointY+45+i*30);
+      text(this.ReasonObjs[i].Name+" "+this.ReasonObjs[i].Value+"%", this.originPointX+300, 50+this.originPointY+45+i*30);
     }
+
+    PieValueArr = PieValueArr.map(function(element) {
+      return element /sum;
+    });
+
     this.pieChart(200, PieValueArr);
   }
+  compare(X){
+    return function(a,b){
+        var value1 = a[X];
+        var value2 = b[X];
+        return value2 - value1;
+    }
+  }
+
   pieChart(diameter, data) {
     let lastAngle = 0;
     for (let i = 0; i < data.length; i++) {
       // let gray = map(i, 0, data.length, 0, 255);
       fill(this.color[i]);
-      arc(
-        this.originPointX+130,
-        this.originPointY+200,
-        diameter,
-        diameter,
-        lastAngle,
-        lastAngle + radians(data[i]*360)
-      );
-      lastAngle += radians(data[i]*360);
+      if(data[i]==0){
+        continue;
+      }else{
+        arc(
+          this.originPointX+130,
+          this.originPointY+200,
+          diameter,
+          diameter,
+          lastAngle,
+          lastAngle + data[i]*2*PI
+        );
+        lastAngle += data[i]*2*PI;
+      }
+
     }
+  }
+}
+
+class Text{
+  constructor(){
+    this.originPointX=200;
+    this.originPointY=100;
+    this.titleLength=1000;
+    this.textBoxLength=2000;
+  }
+
+  display(){
+    noStroke()
+    fill(color(0,191,255));
+    rect((w-this.titleLength)/2,this.originPointY,this.titleLength,100);
+    fill(color("white"));
+    textFont('Georgia');
+    textSize(50);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    text("Infographic on RER B incidents",w/2,this.originPointY+50);
+
+    textSize(20);
+    textFont('Arial');
+    textStyle(ITALIC);
+    fill(color("black"));
+    text("RER incidents 1",w/2,this.originPointY+150);
+
+    fill(color("white"));
+    rect((w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,400);
+
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    fill(color("black"));
+    text(`This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
+    Social media is a rich source of information to observe and understand the views of the general population towards migrants and refugees: how much the matter concerns them, how they feel about it and what events are perceived as particularly important.`
+    ,(w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,400);
+
+
   }
 }
 

@@ -146,6 +146,7 @@ function draw() {
   let backgroundColor = color(232,232,232);
   background(backgroundColor);
   
+  noStroke();
     for (let j = 0; j < 7; j++) {
       textSize(32);
       text(2019-j, 100, 1050+j*210);
@@ -415,7 +416,7 @@ class ReasonChart{
     textSize(30);
     textAlign(CENTER, CENTER);
     fill(color("black"));
-    text(`This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
+    text(`The size of the window is wierd right now, use ctrl + to resize the window. This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
     Social media is a rich source of information to observe and understand the views of the general population towards migrants and refugees: how much the matter concerns them, how they feel about it and what events are perceived as particularly important.`
     ,this.originPointX+this.width+500,this.originPointY,800,800);
   }
@@ -609,7 +610,7 @@ class Text{
     textSize(30);
     textAlign(CENTER, CENTER);
     fill(color("black"));
-    text(`This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
+    text(`The size of the window is wierd right now, use ctrl + to resize the window. This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
     Social media is a rich source of information to observe and understand the views of the general population towards migrants and refugees: how much the matter concerns them, how they feel about it and what events are perceived as particularly important.`
     ,(w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,400);
 

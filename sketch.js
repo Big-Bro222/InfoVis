@@ -414,10 +414,12 @@ class ReasonChart{
     
     //rect(this.originPointX+this.width+500,this.originPointY,800,800);
     textSize(30);
-    textAlign(CENTER, CENTER);
+    textAlign(LEFT, CENTER);
     fill(color("black"));
-    text(`The size of the window is wierd right now, use ctrl + to resize the window. This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
-    Social media is a rich source of information to observe and understand the views of the general population towards migrants and refugees: how much the matter concerns them, how they feel about it and what events are perceived as particularly important.`
+    text(`     With our initial analysis, we can see that there are a few potential trends regarding perturbations that are a result of passenger, security, and social movement reasons. Perturbations due to passenger reasons have been generally increasing. Perturbations due to security reasons were low, then saw a sharp spike in 2015, with a steady decrease for the few years after. [look at by month to confirm] As speculation, this could be a result of heightened security in France after the terrorist attacks that took place this year. 
+    
+    The purple line representing perturbations due to social movements gives the impression of a cyclical nature, which could be an interesting observation about social movements in the industry. [verify] Although the data for 2019 is incomplete, and would likely show a different story if it included December (grave nationale).
+    `
     ,this.originPointX+this.width+500,this.originPointY,800,800);
   }
   
@@ -605,13 +607,17 @@ class Text{
     text("RER incidents 1",w/2,this.originPointY+150);
 
     fill(color("white"));
-    rect((w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,400);
+    rect((w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,600);
 
     textSize(30);
     textAlign(CENTER, CENTER);
+    textStyle(NORMAL);
     fill(color("black"));
-    text(`The size of the window is wierd right now, use ctrl + to resize the window. This will be replaced.Blablabla, Blablabla,Blablabla. The nearly 351,000 migration-related tweets represented here as circles were collected during the months of August, September and October from the United States and the United Kingdom.
-    Social media is a rich source of information to observe and understand the views of the general population towards migrants and refugees: how much the matter concerns them, how they feel about it and what events are perceived as particularly important.`
+    text(`Use ctrl - to resize the window. This a information visualization system based on RerB email notifications from 2013 to 2019.This first visualization below shows the number of RER B perturbations by reason over the course of seven years. The second graph shows the breakdown of perturbation reasons by year.
+
+
+    The first presentation of data can show and allow the analysis of trends in the kinds of perturbations and interruptions that affect the RER line B over the last 7 years. We can see that the incidents on weekends are relatively less then the incidents on weekdays. Also the incidents in July and August are less then the incidents in June.This shows that during holidays the number of incidents drops.
+    `
     ,(w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,400);
 
 

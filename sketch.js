@@ -19,7 +19,11 @@ function setup() {
      AccidentInfo.Type=AccidentTypes[i];
      AccidentInfo.Date=AccidentDates[i];
      AccidentInfo.Time=AccidentTimes[i];
-     AccidentInfo.DayofWeek=AccidentDates[i].getDay();
+     if(AccidentDates[i].getDay()==0){
+      AccidentInfo.DayofWeek=6;
+     }else{
+      AccidentInfo.DayofWeek=AccidentDates[i].getDay();
+     }
      AccidentInfo.Reason=Reasons[i];
      AccidentInfos.push(AccidentInfo);
   }
@@ -32,23 +36,25 @@ function setup() {
       var PerturbationArray=[0,0,0,0,0,0,0];
       var InterruptionArray=[0,0,0,0,0,0,0];
       var OtherArray=[0,0,0,0,0,0,0];
-      AccidentArray=[PerturbationArray,InterruptionArray,OtherArray]
+      var AccidentTotalArray=[0,0,0,0,0,0,0];
+      AccidentArray=[PerturbationArray,InterruptionArray,OtherArray,AccidentTotalArray];
       AccidentInfos.forEach(element => {
         var YearMonthMatch=element.Date.getFullYear()==i+2013&&(element.Date.getMonth()==j||element.Date.getMonth()+12==j);
         if(YearMonthMatch){
+          AccidentTotalArray[element.DayofWeek-1]++;
           if(element.Type=='perturbation'){
-            PerturbationArray[element.DayofWeek]++;
+            PerturbationArray[element.DayofWeek-1]++;
           }
           else if(element.Type=='interruption')
           {
-            InterruptionArray[element.DayofWeek]++;
+            InterruptionArray[element.DayofWeek-1]++;
           }else{
-            OtherArray[element.DayofWeek]++;
+            OtherArray[element.DayofWeek-1]++;
           }
         }
       });
 
-      Bars[i][j]=new Bar(j,i,AccidentArray);
+      Bars[i][j]=new Bar(j,7-i,AccidentArray);
     }
   }
   PriviousBar=Bars[0][0];
@@ -69,12 +75,12 @@ function MouseOver(){
   cor=[0,0];
   cor=CalculateCor(mouseX,mouseY);
   if(cor[0]!=-1&&cor[1]!=-1){
-    if(PriviousBar!=Bars[cor[1],cor[0]]){
+    if(PriviousBar!=Bars[6-cor[1],cor[0]]){
       PriviousBar.mouseOut();
     }
 
-    Bars[cor[1]][cor[0]].mouseOver();
-    PriviousBar=Bars[cor[1]][cor[0]];
+    Bars[6-cor[1]][cor[0]].mouseOver();
+    PriviousBar=Bars[6-cor[1]][cor[0]];
   }
 
   ReasonChart.mouseOver();
@@ -149,11 +155,14 @@ function draw() {
   noStroke();
     for (let j = 0; j < 7; j++) {
       textSize(32);
-      text(2019-j, 100, 1050+j*210);
+      text(2013+j, 100, 1050+j*210);
       }
+    
+    var Monthname=["Placeholder","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
     for(let i=1;i<=12;i++){
       textSize(32);
-      text(i, 90+i*210, 2450);
+      text(Monthname[i], 50+i*210, 2450);
       }
   Barsss=[].concat.apply([],Bars);
   Barsss.forEach(element => {
@@ -181,16 +190,18 @@ class Bar{
     this.PerturbationArray=AccidentArray[0];
     this.InterruptionArray=AccidentArray[1];
     this.OtherArray=AccidentArray[2];
+    this.AccidentTotalArray=AccidentArray[3];
     this.originPointX=200-this.gap+this.column*(this.size+this.gap);
-    this.originPointY=2200-this.row*(this.size+this.gap);
+    this.originPointY=2400-this.row*(this.size+this.gap);
+    
   }
   display(){
     //draw square background
-    var c = color(255, 204, 0);
-    var DayofWeek=["Sun","Mon","Tu","Wed","Thur","Fri","Sat"]
+    var c = color(245, 245, 245);
+    var DayofWeek=["M","Tu","W","Th","F","Sa","S"]
     fill(c); 
     strokeWeight(1);
-    stroke(51);
+    stroke(1);
     rect(this.originPointX,this.originPointY,this.size,this.size); 
 
     for(var i=0;i<DayofWeek.length;i++){
@@ -200,11 +211,17 @@ class Bar{
       text(DayofWeek[i],this.originPointX + 25 * i + (this.size - 6 * 25) / 2,this.originPointY+this.size-10);
     }
 
-    fill(color('white'));  
+    fill(color('white'));
+    noStroke();  
     rect(this.originPointX+this.padding,this.originPointY+this.padding,this.size-2*this.padding,this.size-2*this.padding);
-    this.DrawLineChart(this.originPointX, this.originPointY,this.PerturbationArray,[255,255,0]);
-    this.DrawLineChart(this.originPointX, this.originPointY,this.InterruptionArray,[255,0,0]);
-    this.DrawLineChart(this.originPointX, this.originPointY,this.OtherArray,[0,0,255]);
+    
+
+    this.DrawLineChart(this.originPointX, this.originPointY,this.AccidentTotalArray,[255,235,205]);
+    strokeWeight(1);
+    stroke(1);
+    //this.DrawLineChart(this.originPointX, this.originPointY,this.PerturbationArray,[255,255,0]);
+    //this.DrawLineChart(this.originPointX, this.originPointY,this.InterruptionArray,[255,0,0]);
+    //this.DrawLineChart(this.originPointX, this.originPointY,this.OtherArray,[0,0,255]);
     
     //draw circular chart
 
@@ -223,68 +240,72 @@ class Bar{
               if(labeldown&&labelright){
                 rect(mouseX,mouseY,labelwidth,labelheight);
                 fill(color("black"));
-                textSize(10);
+                textSize(12);
                 textAlign(LEFT, CENTER);
-                text("Perturbation: "+this.PerturbationArray[i],mouseX+10, mouseY+10);
-                text("Interruption: "+this.InterruptionArray[i],mouseX+10, mouseY+20);
-                text("Other: "+this.OtherArray[i],mouseX+10, mouseY+30);
-                strokeWeight(5)
-                stroke(255,250,205);
-                point(mouseX+90,mouseY+10);
-                stroke(255,140,0);
-                point(mouseX+90,mouseY+20);
-                stroke(99,184,255);
-                point(mouseX+90,mouseY+30);
+                text("AccidentNum: "+this.AccidentTotalArray[i],mouseX+10, mouseY+20);
+                // text("Perturbation: "+this.PerturbationArray[i],mouseX+10, mouseY+10);
+                // text("Interruption: "+this.InterruptionArray[i],mouseX+10, mouseY+20);
+                // text("Other: "+this.OtherArray[i],mouseX+10, mouseY+30);
+                // strokeWeight(5)
+                // stroke(255,250,205);
+                // point(mouseX+90,mouseY+10);
+                // stroke(255,140,0);
+                // point(mouseX+90,mouseY+20);
+                // stroke(99,184,255);
+                // point(mouseX+90,mouseY+30);
     
               }else if(!labeldown&&labelright){
                 rect(mouseX,mouseY-labelheight,labelwidth,labelheight);
                 fill(color("black"));
-                textSize(10);
+                textSize(12);
                 textAlign(LEFT, CENTER);
-                text("Perturbation: "+this.PerturbationArray[i],mouseX+10, mouseY-40);
-                text("Interruption: "+this.InterruptionArray[i],mouseX+10, mouseY-30);
-                text("Other: "+this.OtherArray[i],mouseX+10, mouseY-20);
-                strokeWeight(5)
-                stroke(255,250,205);
-                point(mouseX+90,mouseY-40);
-                stroke(255,140,0);
-                point(mouseX+90,mouseY-30);
-                stroke(99,184,255);
-                point(mouseX+90,mouseY-20);
+                text("AccidentNum: "+this.AccidentTotalArray[i],mouseX+10, mouseY-30);
+                // text("Perturbation: "+this.PerturbationArray[i],mouseX+10, mouseY-40);
+                // text("Interruption: "+this.InterruptionArray[i],mouseX+10, mouseY-30);
+                // text("Other: "+this.OtherArray[i],mouseX+10, mouseY-20);
+                // strokeWeight(5)
+                // stroke(255,250,205);
+                // point(mouseX+90,mouseY-40);
+                // stroke(255,140,0);
+                // point(mouseX+90,mouseY-30);
+                // stroke(99,184,255);
+                // point(mouseX+90,mouseY-20);
     
     
               }else if(!labeldown&&!labelright){
                 rect(mouseX-labelwidth,mouseY-labelheight,labelwidth,labelheight);
                 fill(color("black"));
-                textSize(10);
+                textSize(12);
                 textAlign(LEFT, CENTER);
-                text("Perturbation: "+this.PerturbationArray[i],mouseX-90, mouseY-40);
-                text("Interruption: "+this.InterruptionArray[i],mouseX-90, mouseY-30);
-                text("Other: "+this.OtherArray[i],mouseX-90, mouseY-20);
-                strokeWeight(5)
-                stroke(255,250,205);
-                point(mouseX-10,mouseY-40);
-                stroke(255,140,0);
-                point(mouseX-10,mouseY-30);
-                stroke(99,184,255);
-                point(mouseX-10,mouseY-20);
+                text("AccidentNum: "+this.InterruptionArray[i],mouseX-90, mouseY-30);
+                // text("Perturbation: "+this.PerturbationArray[i],mouseX-90, mouseY-40);
+                // text("Interruption: "+this.InterruptionArray[i],mouseX-90, mouseY-30);
+                // text("Other: "+this.OtherArray[i],mouseX-90, mouseY-20);
+                // strokeWeight(5)
+                // stroke(255,250,205);
+                // point(mouseX-10,mouseY-40);
+                // stroke(255,140,0);
+                // point(mouseX-10,mouseY-30);
+                // stroke(99,184,255);
+                // point(mouseX-10,mouseY-20);
     
     
               }else{
                 rect(mouseX-labelwidth,mouseY,labelwidth,labelheight);
                 fill(color("black"));
-                textSize(10);
+                textSize(12);
                 textAlign(LEFT, CENTER);
-                text("Perturbation: "+this.PerturbationArray[i],mouseX-90, mouseY+10);
-                text("Interruption: "+this.InterruptionArray[i],mouseX-90, mouseY+20);
-                text("Other: "+this.OtherArray[i],mouseX-90, mouseY+30);
-                strokeWeight(5)
-                stroke(255,250,205);
-                point(mouseX-10,mouseY+10);
-                stroke(255,140,0);
-                point(mouseX-10,mouseY+20);
-                stroke(99,184,255);
-                point(mouseX-10,mouseY+30);
+                text("AccidentNum: "+this.InterruptionArray[i],mouseX-90, mouseY+20);
+                // text("Perturbation: "+this.PerturbationArray[i],mouseX-90, mouseY+10);
+                // text("Interruption: "+this.InterruptionArray[i],mouseX-90, mouseY+20);
+                // text("Other: "+this.OtherArray[i],mouseX-90, mouseY+30);
+                // strokeWeight(5)
+                // stroke(255,250,205);
+                // point(mouseX-10,mouseY+10);
+                // stroke(255,140,0);
+                // point(mouseX-10,mouseY+20);
+                // stroke(99,184,255);
+                // point(mouseX-10,mouseY+30);
     
     
               }
@@ -302,8 +323,8 @@ class Bar{
     this.display();
   }
   DrawLineChart(originPointX, originPointY,AccidentCountDayofWeek,color) {
-    fill(color[0],color[1],color[2],63);
-    let multiply=12;
+    fill(color[0],color[1],color[2]);
+    let multiply=8;
     strokeWeight(1);
     beginShape();
     for (let i = 0; i < AccidentCountDayofWeek.length; i++) {
@@ -311,13 +332,15 @@ class Bar{
     }
     vertex(originPointX+this.size-this.padding,originPointY+this.size-this.padding);
     vertex(originPointX+this.padding,originPointY+this.size-this.padding);
+    vertex(originPointX  + (this.size - 6 * 25) / 2, originPointY + this.size - this.padding - AccidentCountDayofWeek[0] * multiply);
+
     // 结束绘制图形
     endShape();
 
-    strokeWeight(9);
-    for (let i = 0; i < AccidentCountDayofWeek.length; i++) {
-      point(originPointX + 25 * i + (this.size - 6 * 25) / 2, originPointY + this.size - this.padding - AccidentCountDayofWeek[i] * multiply);
-    }
+    // strokeWeight(9);
+    // for (let i = 0; i < AccidentCountDayofWeek.length; i++) {
+    //   point(originPointX + 25 * i + (this.size - 6 * 25) / 2, originPointY + this.size - this.padding - AccidentCountDayofWeek[i] * multiply);
+    // }
   }
   }
 
@@ -395,21 +418,32 @@ class ReasonChart{
       noStroke();
       text("Incident reason over years", this.originPointX+this.width/2, this.originPointY+this.height+100);
 
+    for(var i=0;i<8;i++){
+      textSize(16);
+      textAlign(CENTER, BASELINE);
+      fill(color("black"));
+      noStroke();
+      if(i==7){
+        textSize(20);
+        text("Year", this.originPointX+this.padding+i*(this.width - 2 * this.padding) / 6-50, this.originPointY+this.height+30);
+      }else{
+        text(2013+i, this.originPointX+this.padding+i*(this.width - 2 * this.padding) / 6, this.originPointY+this.height+30);
+      }
+    }
+
+
     for(var i=0;i<7;i++){
       textSize(16);
       textAlign(CENTER, BASELINE);
       fill(color("black"));
       noStroke();
-      text(2013+i, this.originPointX+this.padding+i*(this.width - 2 * this.padding) / 6, this.originPointY+this.height+30);
-    }
 
-
-    for(var i=0;i<6;i++){
-      textSize(16);
-      textAlign(CENTER, BASELINE);
-      fill(color("black"));
-      noStroke();
-      text(i*50, this.originPointX-30, this.originPointY+this.height-i*200);
+      if(i==6){
+        textSize(20);
+        text("Number of Accidents", this.originPointX-30, this.originPointY+this.height-i*200+150);
+      }else{
+        text(i*50, this.originPointX-30, this.originPointY+this.height-i*200);
+      }
     }    
     
     //rect(this.originPointX+this.width+500,this.originPointY,800,800);
@@ -613,7 +647,7 @@ class Text{
     textAlign(CENTER, CENTER);
     textStyle(NORMAL);
     fill(color("black"));
-    text(`Use ctrl - to resize the window. This a information visualization system based on RerB email notifications from 2013 to 2019.This first visualization below shows the number of RER B perturbations by reason over the course of seven years. The second graph shows the breakdown of perturbation reasons by year.
+    text(`Use ctrl - （ command - for macOS ）to resize the window. This a information visualization system based on RerB email notifications from 2013 to 2019.This first visualization below shows the number of RER B perturbations by reason over the course of seven years. The second graph shows the breakdown of perturbation reasons by year.
 
 
     The first presentation of data can show and allow the analysis of trends in the kinds of perturbations and interruptions that affect the RER line B over the last 7 years. We can see that the incidents on weekends are relatively less then the incidents on weekdays. Also the incidents in July and August are less then the incidents in June.This shows that during holidays the number of incidents drops.

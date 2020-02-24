@@ -12,7 +12,8 @@ function setup() {
   AccidentTimes=table.getColumn("Time");
   Reasons=table.getColumn("Reason");
   
-  
+
+
   AccidentInfos=[];
   for(let i=0;i<=AccidentTypes.length-1;i++){
      var AccidentInfo= new Object();
@@ -61,6 +62,27 @@ function setup() {
   
   ReasonChart=new ReasonChart();
   ReasonChart.setup();
+  var BtnState=true;
+  PieBtn = createImg('Asset/OnBtn.png');
+  PieBtn.position(1250, 3100);
+  PieBtn.size(200,200);
+  PieBtn.mousePressed(PieMousePressed);
+
+  function PieMousePressed(){
+    if(BtnState){
+      PieBtn = createImg('Asset/OffBtn.png');
+      PieBtn.position(1250, 3100);
+      PieBtn.size(200,200);
+      PieBtn.mousePressed(PieMousePressed);
+    }else{
+      PieBtn = createImg('Asset/OnBtn.png');
+      PieBtn.position(1250, 3100);
+      PieBtn.size(200,200);
+      PieBtn.mousePressed(PieMousePressed);
+    }
+    BtnState=!BtnState;
+    ReasonChart.ChangeState();
+  }
 }
 //convert time+date into Date type
 function StringtoDateArray(Acc){
@@ -353,7 +375,7 @@ class ReasonChart{
     this.padding=35;
     this.AccidentInfos=AccidentInfos;
     this.Reasonpops=[];
-
+    this.PieChartState=true;
     this.UnknownReason=[0,0,0,0,0,0,0];
     this.ConstructionReason=[0,0,0,0,0,0,0];
     this.PassengerReason=[0,0,0,0,0,0,0];
@@ -393,6 +415,10 @@ class ReasonChart{
     this.SocialReason=this.ReasonToYear(this.SocialReason,"Social movement");
     this.OpertationReason=this.ReasonToYear(this.OpertationReason,"Operation problem");
     this.WeatherReason=this.ReasonToYear(this.WeatherReason,"Weather reason");
+  }
+  ChangeState(){
+    this.PieChartState=!this.PieChartState;
+    console.log("Pie Pressed");
   }
   display(){
     this.DrawChart();
@@ -472,36 +498,39 @@ class ReasonChart{
   }
 
   mouseOver(){
-    var mouseInReasonChart=mouseX>this.originPointX&&mouseX<this.originPointX+this.width&&mouseY>this.originPointY&&mouseY<this.originPointY+this.height;
-    if(mouseInReasonChart){
-      strokeWeight(1);
-      this.DrawChart();
-      strokeWeight(2);
-      var i=Math.floor((mouseX-this.originPointX)/(this.width/7));
-      line(this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY,this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY+this.height);
-
-      var PieValueArr=[this.ConstructionReason[i],
-                   this.PassengerReason[i],
-                   this.SecurityReason[i],
-                   this.TechniqueReason[i],
-                   this.SocialReason[i],
-                   this.OpertationReason[i],
-                   this.WeatherReason[i],
-                   this.UnknownReason[i]]
-      var Paneldown=mouseY<this.originPointY+this.height/2;
-      var Panelright=mouseX<this.originPointX+this.width/2;
-      if(Paneldown&&Panelright){
-        this.PieChart.display(mouseX,mouseY,PieValueArr);
-      }else if(Paneldown&&!Panelright){
-        this.PieChart.display(mouseX-this.PieChart.width,mouseY,PieValueArr);
-      }else if(!Paneldown&&Panelright){
-        this.PieChart.display(mouseX,mouseY-this.PieChart.height,PieValueArr);
+    if(this.PieChartState){
+      var mouseInReasonChart=mouseX>this.originPointX&&mouseX<this.originPointX+this.width&&mouseY>this.originPointY&&mouseY<this.originPointY+this.height;
+      if(mouseInReasonChart){
+        strokeWeight(1);
+        this.DrawChart();
+        strokeWeight(2);
+        var i=Math.floor((mouseX-this.originPointX)/(this.width/7));
+        line(this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY,this.originPointX + this.padding+i*(this.width - 2 * this.padding) / 6,this.originPointY+this.height);
+  
+        var PieValueArr=[this.ConstructionReason[i],
+                     this.PassengerReason[i],
+                     this.SecurityReason[i],
+                     this.TechniqueReason[i],
+                     this.SocialReason[i],
+                     this.OpertationReason[i],
+                     this.WeatherReason[i],
+                     this.UnknownReason[i]]
+        var Paneldown=mouseY<this.originPointY+this.height/2;
+        var Panelright=mouseX<this.originPointX+this.width/2;
+        if(Paneldown&&Panelright){
+          this.PieChart.display(mouseX,mouseY,PieValueArr);
+        }else if(Paneldown&&!Panelright){
+          this.PieChart.display(mouseX-this.PieChart.width,mouseY,PieValueArr);
+        }else if(!Paneldown&&Panelright){
+          this.PieChart.display(mouseX,mouseY-this.PieChart.height,PieValueArr);
+        }else{
+          this.PieChart.display(mouseX-this.PieChart.width,mouseY-this.PieChart.height,PieValueArr);
+        }
       }else{
-        this.PieChart.display(mouseX-this.PieChart.width,mouseY-this.PieChart.height,PieValueArr);
+        this.DrawChart();
       }
-    }else{
-      this.DrawChart();
     }
+
   }
 
   DrawReanLine(ReasonArray,color) {

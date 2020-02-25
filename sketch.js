@@ -3,6 +3,7 @@ var h= 4000;
 
 function preload(){
   table=loadTable("rerb.csv","csv","header");
+  table3D=loadTable("rerb 3D.csv","csv","header");
 }
 function setup() {
   c=createCanvas(w,h);
@@ -12,6 +13,14 @@ function setup() {
   AccidentTimes=table.getColumn("Time");
   Reasons=table.getColumn("Reason");
   
+
+  AccidentDates3D=StringtoDateArray(table3D.getColumn("Date"));
+  AccidentTimes3D=table3D.getColumn("Time");
+  Station1=table3D.getColumn("Station1");
+  Station2=table3D.getColumn("Station2");
+  console.log(Station1);
+
+  //Station1,Station2
 
 
   AccidentInfos=[];
@@ -64,19 +73,19 @@ function setup() {
   ReasonChart.setup();
   var BtnState=true;
   PieBtn = createImg('Asset/OnBtn.png');
-  PieBtn.position(1250, 3100);
+  PieBtn.position(1350, 3100);
   PieBtn.size(200,200);
   PieBtn.mousePressed(PieMousePressed);
 
   function PieMousePressed(){
     if(BtnState){
       PieBtn = createImg('Asset/OffBtn.png');
-      PieBtn.position(1250, 3100);
+      PieBtn.position(1350, 3100);
       PieBtn.size(200,200);
       PieBtn.mousePressed(PieMousePressed);
     }else{
       PieBtn = createImg('Asset/OnBtn.png');
-      PieBtn.position(1250, 3100);
+      PieBtn.position(1350, 3100);
       PieBtn.size(200,200);
       PieBtn.mousePressed(PieMousePressed);
     }
@@ -401,7 +410,7 @@ class ReasonChart{
       "Social movement",
       "Operation problem",
       "Weather reason",
-      "Unknown reason"
+      "Unspecified reason"
     ]
     this.PieChart=new PieChart(this.color,this.ReasonName);
 

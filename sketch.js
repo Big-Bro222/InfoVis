@@ -193,7 +193,7 @@ function draw() {
 
     for(let i=1;i<=12;i++){
       textSize(32);
-      text(Monthname[i], 50+i*210, 2450);
+      text(Monthname[i], 50+i*210, 900);
       }
   Barsss=[].concat.apply([],Bars);
   Barsss.forEach(element => {
@@ -485,11 +485,15 @@ class ReasonChart{
     textSize(30);
     textAlign(LEFT, CENTER);
     fill(color("black"));
-    text(`     With our initial analysis, we can see that there are a few potential trends regarding perturbations that are a result of passenger, security, and social movement reasons. Perturbations due to passenger reasons have been generally increasing. Perturbations due to security reasons were low, then saw a sharp spike in 2015, with a steady decrease for the few years after. [look at by month to confirm] As speculation, this could be a result of heightened security in France after the terrorist attacks that took place this year. 
+    text(`     This visualization shows the number of RER B incidents by reason over the course of seven 
+    years. Each line on the graph represents a different category of incident reason. The Y axis is the number of incidents, and the X axis is time in years. If you place your cursor in the visualization area, a pie chart appears which shows the breakdown of reasons by percentage of all the incidents for a given year.
     
-    The purple line representing perturbations due to social movements gives the impression of a cyclical nature, which could be an interesting observation about social movements in the industry. [verify] Although the data for 2019 is incomplete, and would likely show a different story if it included December (grave nationale).
+    With our initial analysis, we can see that there are a few potential trends regarding incidents that are a result of passenger, security, and social movement reasons. Incidents due to passenger reasons have been generally increasing. Incidents due to security reasons were low, then saw a sharp spike in 2015, with a steady decrease for the few years after. As speculation, this could be a result of heightened security in France after the terrorist attacks that took place this year. 
+    
+    The purple line, representing incidents due to social movements, gives the impression of a cyclical nature. This could be an interesting observation about social movements in the industry. Although, the data for 2019 is incomplete (missing December), and would likely tell a different story if it included December considering the massive strike that ensued.
+    
     `
-    ,this.originPointX+this.width+500,this.originPointY,800,800);
+    ,this.originPointX+this.width+500,this.originPointY-100,800,1050);
   }
   
   DrawChart() {
@@ -679,18 +683,20 @@ class Text{
     text("RER incidents 1",w/2,this.originPointY+150);
 
     fill(color("white"));
-    rect((w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,600);
+    rect((w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,500);
 
     textSize(30);
-    textAlign(CENTER, CENTER);
+    textAlign(LEFT, CENTER);
     textStyle(NORMAL);
     fill(color("black"));
-    text(`Use ctrl - （ command - for macOS ）to resize the window. This a information visualization system based on RerB email notifications from 2013 to 2019.This first visualization below shows the number of RER B perturbations by reason over the course of seven years. The second graph shows the breakdown of perturbation reasons by year.
+    text(`This page presents an information visualization project based on RER B incident email notifications from 2013 to 2019, as part of the InfoVis class at Université Paris-Saclay. Use ctrl - (command - for macOS) to resize the window if needed.
+    
+    This visualization can be used to see trends in the number of RER incidents per day of the week, by month over the last 7 years. Each row represents a year, starting at 2013 from the top, and each column represents a month. Within each mini-visualization, the count of incidents per day of the week during that month is shown.
 
+Looking at the visualization we can see a few interesting trends. The first apparent trend is that more incidents seem to occur during weekdays than on the weekends. Second, for the summer months there seems to be less incidents in July and August than in June, which could be a result of there being less people on the RER during the holidays. There also seems to be a spike in incidents during the second half of the week during August.
 
-    The first presentation of data can show and allow the analysis of trends in the kinds of perturbations and interruptions that affect the RER line B over the last 7 years. We can see that the incidents on weekends are relatively less then the incidents on weekdays. Also the incidents in July and August are less then the incidents in June.This shows that during holidays the number of incidents drops.
     `
-    ,(w-this.textBoxLength)/2,this.originPointY+200,this.textBoxLength,400);
+    ,(w-this.textBoxLength)/2+20,this.originPointY+200,this.textBoxLength-40,400);
 
 
   }
